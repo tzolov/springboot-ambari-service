@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+  <!-- Spring Boot environment configuration properties. Do not alter properties with @SOME VALUE@ values. -->
+  <property>
+    <name>install_dir</name>
+    <value>/opt</value>
+    <description>Local directory where to install the application.</description>
+  </property>
+
+  <property>
+    <name>user</name>
+    <value>@APPLICATION_USER_NAME@</value>
+    <description>User that the application runs as</description>
+  </property>
+
+  <property>
+    <name>group</name>
+    <value>@APPLICATION_GROUP_NAME@</value>
+    <description>Group that the application runs as</description>
+  </property>
+
+  <property>
+    <name>pid_dir</name>
+    <value>/var/run</value>
+    <description>Directory containing process ID file</description>
+  </property>
+
+  <property>
+    <name>log_dir</name>
+    <value>/var/log</value>
+    <description>Application log directory</description>
+  </property>
+
+  <property>
+    <name>java_opts</name>
+    <value>-Xmx1024m -XX:MaxPermSize=128M</value>
+    <description>Spring Boot java options</description>
+  </property>
+
+  <!-- Spring Boot Unix/Linux services init.d configuration. (http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#deployment-script-customization-conf-file) 
+    The configuration file should be situated next to the jar file and have the same name but suffixed with .conf rather than 
+    .jar -->
+  <property>
+    <name>spring_boot_config_content</name>
+    <description>Spring Boot init.d configuration file</description>
+    <value>
+MODE=service
+SPRING_CONFIG_NAME={{application_properties_path}}
+PID_FOLDER={{pid_dir}}
+LOG_FOLDER={{log_dir}}
+RUN_ARGS="--logging.file={{log_file}} --spring.pidfile={{pid_dir}}/{{application_name}}/{{application_name}}.pid"
+JAVA_OPTS={{java_opts}}
+JAVA_HOME={{java64_home}}
+DEBUG=true
+    </value>
+  </property>
+
+</configuration>  

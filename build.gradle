@@ -1,0 +1,208 @@
+import com.sun.org.apache.xerces.internal.parsers.XMLParser;
+
+// ----------------------------------------------------------------------------
+//  User Definitions
+// ----------------------------------------------------------------------------
+
+// Unique Ambari Service name for the spring-boot application
+def applicationName = "springboot-app"
+
+// Ambari Service version for the spring-boot application
+def ambariServiceVersion = '0.0.10'
+
+// Ambari Service Component display name 
+def displayName = "SpringBoot App"
+
+// (optional) Provide spring boot application description
+def applicationDescription = "Spring Boot Web Application"
+
+// (optional) Create a specific user/group account to run the spring-boot application
+def applicationUserName = "springboot"
+def applicationGroupName = "springboot"
+
+// (optional) Rpm/Deb package name and description
+def ambariPackageName = applicationName.replace("_", "-").replace(".", "-") + "-ambari-service"
+def ambariPackageDescription = applicationDescription + " Service for Apache Ambari"
+
+
+// ----------------------------------------------------------------------------
+// System Definitions. Usually you don't need to modify this section
+// ----------------------------------------------------------------------------
+def springBootApplicationJarName = extractSpringBootJarName()
+def ambariServiceName = applicationName.replace(' ', '').replace(".", "_").replace("-", "_").toUpperCase()
+
+buildscript {
+	repositories {
+		mavenCentral()
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'com.netflix.nebula:gradle-ospackage-plugin:2.2.6'
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'os-package'
+apply plugin: 'rpm'
+apply plugin: 'distribution'
+apply plugin: 'com.jfrog.bintray'
+
+buildDeb.enabled = false
+buildRpm.enabled = false
+
+ospackage {
+	version = ambariServiceVersion
+	release = 1
+	arch = NOARCH
+	os = LINUX
+	user 'root'
+	permissionGroup = 'root'
+	packageDescription = ambariPackageDescription
+	packageGroup = 'Applications/Databases'
+	license = 'Apache License v2.0'
+
+	requires('ambari-server', '1.7', GREATER | EQUAL)
+	requires('python', '2.6', GREATER | EQUAL)
+}
+
+bintray {
+	user = System.getenv('BINTRAY_BIGDATA_USER')
+	key = System.getenv('BINTRAY_BIGDATA_KEY')
+
+	dryRun = false
+
+	filesSpec {
+		from ('build/distributions') { include '**/*.rpm' }
+		into ambariPackageName
+	}
+
+	pkg {
+		repo = 'rpm'
+		name = ambariPackageName
+		desc = ambariPackageDescription
+		licenses = ['Apache-2.0']
+		vcsUrl = 'https://github.com/tzolov/'
+		labels = [
+			'SpringBoot',
+			'Ambari',
+			'Hadoop'
+		]
+		publicDownloadNumbers = true
+		version {
+			name = ospackage.version + '-' + ospackage.release.toString()
+			desc = ambariPackageDescription
+		}
+	}
+}
+
+def extractSpringBootJarName() {
+	File libDir = file('src/main/resources/services/package/lib')
+	if (libDir.listFiles().length != 1) {
+		throw new RuntimeException("Excactly one SpringBoot Jar file is expected in Lib!")
+	}
+	String jarFileName = libDir.listFiles()[0].getName()
+	println("Spring Boot Jar File: " + jarFileName)
+	return jarFileName
+}
+
+//  task propGen {
+//	  ext.srcFile = file('src/main/resources/services/configuration/application-config.xml')
+//	  ext.destDir = new File(buildDir, 'generated')
+//	  doLast {
+//		  println "Transforming source file."
+//		  destDir.mkdirs()
+//		  File propertiesTemplates = new File(destDir, 'application.properties.old.j2')
+//		  def confXml = new XmlParser().parse(srcFile)
+//		  confXml.property.each { property ->
+//			  def name = property.name.text();
+//			  println  name + "={{" + name.replace(".", "_") + "}}"
+//			  propertiesTemplates << name + "={{" + name.replace(".", "_") + "}}\n"
+//		  }
+//	  }
+//  }
+
+//build.dependsOn("propGen")
+
+//  task copyGenerated(type: Copy) {
+//	  dependsOn build
+//	  description 'Copies the resource directory to the target directory.'
+//	  from 'build/generated'
+//	  into 'build/resources/main/services/package/scripts/'
+//	  include('**/*.properties.j2')
+//  }
+
+
+
+// Use the user defined properties to initialize the Ambari service files
+processResources {
+
+	filesMatching('services/metainfo.xml') {
+		filter {
+			it
+					.replace('@SERVICE_VERSION@', ospackage.version)
+					.replace('@SERVICE_NAME@', ambariServiceName)
+					.replace('@SERVICE_DISPLAY_NAME@', applicationDescription)
+					.replace('@COMPONENT_DISPLAY_NAME@', displayName)
+					.replace('@SERVICE_DESCRIPTION@', applicationDescription)
+					.replace('@CONFIGURATION_PREFFIX@', applicationName.replace(' ', ''))
+		}
+	}
+
+	filesMatching('services/configuration/application-env.xml') {
+		filter {
+			it
+					.replace('@APPLICATION_USER_NAME@', applicationUserName.toLowerCase())
+					.replace('@APPLICATION_GROUP_NAME@', applicationGroupName.toLowerCase())
+		}
+	}
+
+	filesMatching('services/package/scripts/params.py') {
+		filter {
+			it.replace('@APPLICATION_JAR_NAME@', springBootApplicationJarName)
+		}
+	}
+
+	filesMatching('services/package/scripts/status_params.py') {
+		filter {
+			it.replace('@APPLICATION_NAME@', applicationName.replace(' ', '').toLowerCase())
+		}
+	}
+
+	// Rename the configuration files to make them unique accross the other services in Ambari
+	//   application-env.xml -> <applicaton-name>-env.xml
+	rename { String fileName ->
+		fileName.replace('application-env', applicationName + '-env')
+	}
+	//   application-site.xml -> <application-name>-site.xml
+	rename { String fileName ->
+		fileName.replace('application-site', applicationName + '-site')
+	}
+
+}
+
+task phd30Rpm(type: Rpm) {
+	packageName = ambariPackageName + '-phd30'
+	from('build/resources/main/services') { into '/var/lib/ambari-server/resources/stacks/PHD/3.0/services/' + ambariServiceName }
+}
+
+task hdp22Rpm(type: Rpm) {
+	packageName = ambariPackageName + '-hdp22'
+	from('build/resources/main/services') { into '/var/lib/ambari-server/resources/stacks/HDP/2.2/services/' + ambariServiceName }
+}
+
+task hdp23Rpm(type: Rpm) {
+	packageName = ambariPackageName + '-hdp23'
+	from('build/resources/main/services') { into '/var/lib/ambari-server/resources/stacks/HDP/2.3/services/' + ambariServiceName }
+}
+
+task distTgz(type: Tar) {
+	baseName = ambariPackageName + '-' + ospackage.version + '-' + ospackage.release.toString()
+	compression = Compression.GZIP
+	from { 'build/resources/main/services' }
+}
+
+task dist {
+	dependsOn build, phd30Rpm, hdp22Rpm, hdp23Rpm, distTgz
+}
