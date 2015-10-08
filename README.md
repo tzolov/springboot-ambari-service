@@ -6,7 +6,7 @@ To use the springboot-ambari-service, copy the target spring boot app jar into p
 
 Following detail instructions will walk you through the steps of wrapping an spring boot application into Ambari Service:
 
-* (Re)build the Spring Boot application using Spring Boot 1.3+ or newer  (e.g [1.3.0M5](http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/#getting-started-installation-instructions-for-java) or [1.3.0.BUILD-SNAPSHOT](http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#getting-started-installation-instructions-for-java)) to make fully executable applications for Unix systems (Linux, OSX, FreeBSD etc). Enable the [maven/gradle plugin executable configuration]((http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#deployment-install)) to generate `fully executable jars`.
+* (Re)build the Spring Boot application using Spring Boot 1.3+ or newer  (e.g [1.3.0M5](http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/#getting-started-installation-instructions-for-java) or [1.3.0.BUILD-SNAPSHOT](http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#getting-started-installation-instructions-for-java)) to make fully executable applications for Unix systems (Linux, OSX, FreeBSD etc). Enable the [maven/gradle plugin executable configuration]((http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#deployment-install)) to generate [fully executable jars](http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/#deployment-install).
 * Clone the springboot-ambari-service project
 ```
 git clone https://github.com/tzolov/springboot-ambari-service.git
