@@ -24,6 +24,9 @@ def applicationGroupName = "springboot"
 def ambariPackageName = applicationName.replace("_", "-").replace(".", "-") + "-ambari-service"
 def ambariPackageDescription = applicationDescription + " Service for Apache Ambari"
 
+// Bintray credentials. 
+def bintrayUserEnvVariable = 'BINTRAY_BIGDATA_USER'
+def bintrayKeyEnvVariable = 'BINTRAY_BIGDATA_KEY'
 
 // ----------------------------------------------------------------------------
 // System Definitions. Usually you don't need to modify this section
@@ -68,8 +71,8 @@ ospackage {
 }
 
 bintray {
-	user = System.getenv('BINTRAY_BIGDATA_USER')
-	key = System.getenv('BINTRAY_BIGDATA_KEY')
+	user = System.getenv(bintrayUserEnvVariable)
+	key = System.getenv(bintrayKeyEnvVariable)
 
 	dryRun = false
 
