@@ -1,6 +1,6 @@
 # Wrap Spring Boot application as an Ambari Service
 
-This project makes it easy to wrap any Spring Boot application as an Ambari Service and enable Ambari to provision, manage and monitor the application.
+Easy way to wrap a Spring Boot application as an Ambari Service and enable Ambari to provision, manage and monitor the application.
 
 To use the springboot-ambari-service, copy the target spring boot app jar into project’s lib directory, set the name and the version of the new Ambari Service and define the application properties to be exposed and managed by Ambari. With this set springboot-ambari-service builds service Rpm ready to install on the Ambari Server node. Then Ambari can provision, manage monitor the spring boot app as a native Ambari Service.
 
