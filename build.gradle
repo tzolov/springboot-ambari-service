@@ -10,7 +10,7 @@ def applicationName = "springboot-app"
 // Ambari Service version for the spring-boot application
 def ambariServiceVersion = '0.0.10'
 
-// Ambari Service Component display name 
+// Ambari Service Component display name
 def displayName = "SpringBoot App"
 
 // (optional) Provide spring boot application description
@@ -28,7 +28,7 @@ def ambariPackageDescription = applicationDescription + " Service for Apache Amb
 // ----------------------------------------------------------------------------
 // System Definitions. Usually you don't need to modify this section
 // ----------------------------------------------------------------------------
-def springBootApplicationJarName = extractSpringBootJarName()
+def springBootApplicationJarName = extractSpringBootApplicationJarName()
 def ambariServiceName = applicationName.replace(' ', '').replace(".", "_").replace("-", "_").toUpperCase()
 
 buildscript {
@@ -97,51 +97,32 @@ bintray {
 	}
 }
 
-def extractSpringBootJarName() {
-	File libDir = file('src/main/resources/services/package/lib')
-	if (libDir.listFiles().length != 1) {
+def extractSpringBootApplicationJarName() {
+	
+	def jarFiles = file('src/main/resources/services/package/lib').listFiles({d, f-> f ==~ /.*.jar/ } as FilenameFilter)
+
+	if (jarFiles.length == 0) {
+		throw new RuntimeException("Copy the target spring boot application JAR file to the lib directory!")
+	}
+	
+	if (jarFiles.length > 1) {
+		throw new RuntimeException("Only one JAR file is permitted in the lib directory!")
+	}
+
+	if (jarFiles.length != 1) {
 		throw new RuntimeException("Excactly one SpringBoot Jar file is expected in Lib!")
 	}
-	String jarFileName = libDir.listFiles()[0].getName()
+	String jarFileName = jarFiles[0].getName()
 	println("Spring Boot Jar File: " + jarFileName)
 	return jarFileName
 }
-
-//  task propGen {
-//	  ext.srcFile = file('src/main/resources/services/configuration/application-config.xml')
-//	  ext.destDir = new File(buildDir, 'generated')
-//	  doLast {
-//		  println "Transforming source file."
-//		  destDir.mkdirs()
-//		  File propertiesTemplates = new File(destDir, 'application.properties.old.j2')
-//		  def confXml = new XmlParser().parse(srcFile)
-//		  confXml.property.each { property ->
-//			  def name = property.name.text();
-//			  println  name + "={{" + name.replace(".", "_") + "}}"
-//			  propertiesTemplates << name + "={{" + name.replace(".", "_") + "}}\n"
-//		  }
-//	  }
-//  }
-
-//build.dependsOn("propGen")
-
-//  task copyGenerated(type: Copy) {
-//	  dependsOn build
-//	  description 'Copies the resource directory to the target directory.'
-//	  from 'build/generated'
-//	  into 'build/resources/main/services/package/scripts/'
-//	  include('**/*.properties.j2')
-//  }
-
-
 
 // Use the user defined properties to initialize the Ambari service files
 processResources {
 
 	filesMatching('services/metainfo.xml') {
 		filter {
-			it
-					.replace('@SERVICE_VERSION@', ospackage.version)
+			it.replace('@SERVICE_VERSION@', ambariServiceVersion)
 					.replace('@SERVICE_NAME@', ambariServiceName)
 					.replace('@SERVICE_DISPLAY_NAME@', applicationDescription)
 					.replace('@COMPONENT_DISPLAY_NAME@', displayName)
@@ -152,8 +133,7 @@ processResources {
 
 	filesMatching('services/configuration/application-env.xml') {
 		filter {
-			it
-					.replace('@APPLICATION_USER_NAME@', applicationUserName.toLowerCase())
+			it.replace('@APPLICATION_USER_NAME@', applicationUserName.toLowerCase())
 					.replace('@APPLICATION_GROUP_NAME@', applicationGroupName.toLowerCase())
 		}
 	}
@@ -175,11 +155,11 @@ processResources {
 	rename { String fileName ->
 		fileName.replace('application-env', applicationName + '-env')
 	}
+
 	//   application-site.xml -> <application-name>-site.xml
 	rename { String fileName ->
 		fileName.replace('application-site', applicationName + '-site')
 	}
-
 }
 
 task phd30Rpm(type: Rpm) {
