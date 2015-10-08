@@ -4,8 +4,7 @@
 <configuration>
 
    <!-- Managed Application properties. On service start all properties defined here are converted into spring boot applicatoin.properties 
-    file stored in: /opt/{your application name}/application.properties. For example server.port property is converted into the 
-    equivalent of --server.port=8082 command line argument. 
+    file stored in: /opt/{your application name}/application.properties.
     
     You can expose either some of the predefined common application properties: 
     http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#common-application-properties or application 

@@ -51,7 +51,7 @@ class Master(Script):
         # Fetch application jar build, if no cached
         if not os.path.exists(params.install_jar_path):
             # Move the spring boot application executable jar into the target install dir
-            Execute(format('mv {application_jar_path} {install_jar_path} >> {log_file}'),
+            Execute(format('cp {application_jar_path} {install_jar_path} >> {log_file}'),
                     user=params.user,
                     group=params.group)
             # Make the jar executable so to used it as a Linux service. 
