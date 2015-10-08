@@ -23,13 +23,13 @@ from resource_management.libraries.functions.default import default
 config = Script.get_config()
 
 ###############################################################################
-#      User space. Add custom properties here
+#      User Space 
 ###############################################################################
 
-
+# Add your properties here
 
 ###############################################################################
-#      Do not modify the properties section below!
+#      Do not modify the properties in the section below!
 ###############################################################################
 
 #  Mirror the Spring Boot environment settings   
@@ -43,8 +43,10 @@ log_file = status_params.log_file
 install_dir = status_params.install_dir
 install_jar_path = status_params.install_jar_path
 
+# The absolute path of the target application.properties file
 application_properties_path = os.path.join(install_dir, 'application.properties')
 
+# Absolute path of the spring boot application jar file before it is moved to the install 
 application_jar_path =  os.path.join(os.path.dirname(__file__), '..', 'lib', '@APPLICATION_JAR_NAME@')
 
 application_site = default("/configurations/" + application_name + "-site", None)

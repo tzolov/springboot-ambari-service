@@ -18,10 +18,10 @@ from resource_management import *
 from subprocess import call
 
 """
-The Spring Boot application whould be complied with SpringBoot 1.3+ to leverage the Linux init.d support: http://bit.ly/1WMBHC5
-- On installation the springboot application jar is linked as an init.d service enabling the start/stop/status/restart init.d operations 
+The Spring Boot application has to be complied with SpringBoot 1.3+ to leverage the Linux init.d support: http://bit.ly/1WMBHC5
+- On installation the spring boot application jar is linked as an init.d service enabling the start/stop/status/restart init.d operations 
 - The execution environment is configured through a application-env.xml. It follows the customizing the startup script instructions: http://bit.ly/1MYUvcM
-- The application is configured through the appliction-site.xml file. All properties defined in the application-site.xml are converted into application.properties key/value entries.  
+- The application is configured through the application-site.xml file. All properties defined in the application-site.xml are converted into application.properties key/value entries.  
 """
 class Master(Script):
 
@@ -50,11 +50,11 @@ class Master(Script):
         
         # Fetch application jar build, if no cached
         if not os.path.exists(params.install_jar_path):
-            # Download the application executable jar
-            Execute(format('cp {application_jar_path} {install_jar_path} >> {log_file}'),
+            # Move the spring boot application executable jar into the target install dir
+            Execute(format('mv {application_jar_path} {install_jar_path} >> {log_file}'),
                     user=params.user,
                     group=params.group)
-            # Make the jar executable so it can be used as a Linux service. 
+            # Make the jar executable so to used it as a Linux service. 
             # http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/#deployment-service
             Execute(format('chmod a+x {install_jar_path}'), user=params.user)
             # Make spring boot application jar  a /etc/init.d service 
