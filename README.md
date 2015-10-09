@@ -1,30 +1,31 @@
-# Wrap Spring Boot application as an Ambari Service
+# Create Ambari Services from Spring Boot Applications
 
-Utilities that can convert virtually any [Spring Boot](http://projects.spring.io/spring-boot) application into an [Ambari Service](https://ambari.apache.org/) and allow Ambari to provision, manage and monitor the spring boot application.
+Toolkit to bundle any [Spring Boot](http://projects.spring.io/spring-boot) application into an [Ambari Service](https://ambari.apache.org/). This allows Ambari to provision, manage and monitor the target spring boot applications, provideing blueprint automation and versioned configuration management. 
 
-To use the springboot-ambari-service, copy the target spring boot app jar into project’s lib directory, set the name and the version of the new Ambari Service and define the application properties to be exposed and managed by Ambari. With this set springboot-ambari-service builds service Rpm ready to install on the Ambari Server node. Then Ambari can provision, manage monitor the spring boot app as a native Ambari Service.
+To use the toolkit, copy the target spring boot application jar into the `lib` directory, set the name and the version of the generated Ambari Service and define the application properties to be managed by Ambari. Next the springboot-ambari-service toolkit builds the Ambari Service the RPMs to install it in Ambari. Once installed you can use either the Ambari Wizard or the Blueprint to deply the spring boot app as a native Ambari Service.
 
-Following detail instructions will walk you through the steps of wrapping an spring boot application into Ambari Service:
+### Quick Start
+Instructions how to bundle a Spring Boot application into an Ambari Service:
 
-* (Re)build the Spring Boot application using Spring Boot 1.3+ or newer  (e.g [1.3.0M5](http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/#getting-started-installation-instructions-for-java) or [1.3.0.BUILD-SNAPSHOT](http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#getting-started-installation-instructions-for-java)) to make fully executable applications for Unix systems (Linux, OSX, FreeBSD etc). Enable the [maven/gradle plugin executable configuration]((http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#deployment-install)) to generate [fully executable jars](http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/#deployment-install).
-* Clone the springboot-ambari-service project
+1) (Re)build your Spring Boot application using Spring Boot 1.3+ (e.g [1.3.0.M5](http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/#getting-started-installation-instructions-for-java) or [1.3.0.BUILD-SNAPSHOT](http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#getting-started-installation-instructions-for-java)) and enable the [maven/gradle plugin executable configuration](http://docs.spring.io/spring-boot/docs/1.3.0.BUILD-SNAPSHOT/reference/htmlsingle/#deployment-install) to produce [fully executable jar](http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/#deployment-install).
+2) Clone the [springboot-ambari-service](https://github.com/tzolov/springboot-ambari-service) project
 ```
 git clone https://github.com/tzolov/springboot-ambari-service.git
 ```
-* Copy the spring boot application jar (build in step 1) into the _src/main/resources/services/package/lib_ folder. 
-* Edit the build.gradle file and set the *applicationName*, *ambariServicerVersion* and *displayName* properties.
-* Edit the _src/main/resources/services/configuration/application-site.xml_ to set all application and system properties to be exposed (e.g. the _applicaton.properties_ entires)
-* Build the springboot-ambari-service RPMs. The springboot-ambari-service does all the plumbing
+3) Copy the spring boot application jar (build in step 1) into the `src/main/resources/services/package/lib` folder. 
+4) Edit the build.gradle file and set the `applicationName`, `ambariServicerVersion` and `displayName` properties.
+5) Edit the `src/main/resources/services/configuration/application-site.xml` to set all application and system properties to be exposed (e.g. the `applicaton.properties` entires)
+6) Build the springboot-ambari-service RPMs. The springboot-ambari-service does all the plumbing
 ```
 ./gradlew clean dist
 ```
-* Copy the appropriate rpm (-phd30, -hdp22 or -hdp23) from build/distribution to the Ambari server node.
+7) Copy the appropriate rpm (-phd30, -hdp22 or -hdp23) from `build/distribution` to the Ambari server node.
 ```
 scp build/distributions/springboot-app-ambari-service-phd30-0.0.10-1.noarch.rpm
 ambari@ambari.server.node:
 ```
 
-* On the Ambari node Install the rpm plugin and restart the Ambari server: 
+8) On the Ambari node Install the rpm plugin and restart the Ambari server: 
 ```
 sudo yum -y install ./springboot-app-ambari-service-phd30-0.0.10-1.noarch.rpm 
 sudo /etc/init.d/ambari-server restart
