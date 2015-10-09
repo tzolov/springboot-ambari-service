@@ -40,3 +40,6 @@ ambari@ambari.server.node:
 sudo yum -y install ./springboot-app-ambari-service-phd30-0.0.10-1.noarch.rpm 
 sudo /etc/init.d/ambari-server restart
 ```
+### More info
+Blog entry: [How to bundle a Spring Boot application into an Apache Ambari managed service](http://blog.tzolov.net/2015/10/how-to-bundle-spring-boot-application.html)
+
