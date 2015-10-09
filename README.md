@@ -4,6 +4,10 @@ Toolkit to bundle any [Spring Boot](http://projects.spring.io/spring-boot) appli
 
 To use the toolkit, copy the target spring boot application jar into the `lib` directory, set the name and the version of the generated Ambari Service and define the application properties to be managed by Ambari. Next the springboot-ambari-service toolkit generates an Ambari Service and RPMs to install it in the Ambari Server. Once installed you can use the Ambari Wizard or the Blueprint API to deploy the spring boot app as a native Ambari Service.
 
+[<img align="left" src="http://img.youtube.com/vi/gA95yC8QIJI/3.jpg" alt="zeppelin-view" hspace="15" width="70"></img>](https://www.youtube.com/watch?v=gA95yC8QIJI)
+The [sample video](https://www.youtube.com/watch?v=gA95yC8QIJI) illustrates the toolkit capabilities. It shows how to build install and use Ambari Service from Spring Boot application.
+
+
 ### Quick Start
 Follow the instructions to bundle a Spring Boot application into an Ambari Service:
 
@@ -16,7 +20,7 @@ git clone https://github.com/tzolov/springboot-ambari-service.git
 
 3) Copy the spring boot application jar (build in step 1) into the `src/main/resources/services/package/lib` folder. 
 
-4) Edit the build.gradle file and set the `applicationName`, `ambariServicerVersion` and `displayName` properties.
+4) Edit the `build.gradle` file and set the `applicationName`, `ambariServicerVersion` and `displayName` properties.
 
 5) Edit the `src/main/resources/services/configuration/application-site.xml` to set all application and system properties to be exposed (e.g. the `applicaton.properties` entires)
 
