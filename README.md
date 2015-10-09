@@ -1,6 +1,6 @@
 # Create Ambari Services from Spring Boot Applications
 
-Toolkit to bundle any [Spring Boot](http://projects.spring.io/spring-boot) application into an [Ambari Service](https://ambari.apache.org/). This allows Ambari to provision, manage and monitor the target spring boot applications, provideing blueprint automation and versioned configuration management. 
+Toolkit to bundle any [Spring Boot](http://projects.spring.io/spring-boot) application into an [Ambari Service](https://ambari.apache.org/). This allows Ambari to provision, manage and monitor the target spring boot applications, providing blueprint automation and versioned configuration management. 
 
 To use the toolkit, copy the target spring boot application jar into the `lib` directory, set the name and the version of the generated Ambari Service and define the application properties to be managed by Ambari. Next the springboot-ambari-service toolkit generates an Ambari Service and RPMs to install it in the Ambari Server. Once installed you can use the Ambari Wizard or the Blueprint API to deploy the spring boot app as a native Ambari Service.
 
